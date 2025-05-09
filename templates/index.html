@@ -1,1 +1,134 @@
-templates/index.html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Folgas da Equipe</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Cinza claro de fundo */
+            color: #333;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        .container {
+            margin-top: 30px;
+            background-color: #ffffff; /* Fundo branco para o conteúdo principal */
+            padding: 30px;
+            border-radius: 15px; /* Cantos arredondados */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .header-title {
+            color: #dc3545; /* Vermelho Bootstrap */
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        .form-control {
+            border-radius: 10px; /* Cantos arredondados para inputs */
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            border-radius: 10px; /* Cantos arredondados para o botão */
+            padding: 10px 20px;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+        .table {
+            margin-top: 20px;
+            border-radius: 10px; /* Cantos arredondados para a tabela */
+            overflow: hidden; /* Para que o border-radius funcione com o thead */
+        }
+        .table thead th {
+            background-color: #dc3545; /* Vermelho para o cabeçalho da tabela */
+            color: #ffffff; /* Texto branco */
+            border-bottom: none;
+        }
+        .table tbody tr:nth-child(odd) {
+            background-color: #fdf1f2; /* Vermelho bem claro para linhas ímpares */
+        }
+        .table tbody tr:hover {
+            background-color: #f9e6e8; /* Vermelho um pouco mais escuro no hover */
+        }
+        .alert-info {
+            background-color: #ffebee; /* Vermelho muito claro para informações */
+            color: #c62828; /* Texto vermelho escuro */
+            border-color: #ef9a9a; /* Borda vermelha clara */
+            border-radius: 10px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="header-title">Consulta de Folgas da Equipe</h1>
+        <form method="POST" action="/">
+            <div class="form-group">
+                <label for="data_consulta"><strong>Selecione a Data:</strong></label>
+                <input type="date" class="form-control" id="data_consulta" name="data_consulta" required value="{{ data_selecionada }}">
+            </div>
+            <button type="submit" class="btn btn-danger btn-block">Consultar Folgas</button>
+        </form>
+
+        {% if resultado %}
+            <hr>
+            <h3 class="text-center mt-4 mb-3" style="color: #dc3545;">Resultado para {{ resultado.dia_semana }} ({{ data_selecionada_formatada }})</h3>
+            {% if resultado.turma_folga %}
+                <div class="alert alert-info text-center">
+                    <strong>Turma de Folga: Turma {{ resultado.turma_folga }}</strong>
+                </div>
+                {% if resultado.escalas %}
+                    <table class="table table-striped table-hover">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Horário de Folga</th>
+                                <th>Escala</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for escala_info in resultado.escalas %}
+                            <tr>
+                                <td>{{ escala_info.horario }}</td>
+                                <td>{{ escala_info.escala }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="alert alert-warning text-center">Não foi possível carregar as escalas para esta turma.</div>
+                {% endif %}
+            {% elif resultado.dia_semana == "Domingo (DSR)" %}
+                <div class="alert alert-info text-center">
+                    <strong>{{ resultado.dia_semana }} - Não há turma de folga.</strong>
+                </div>
+            {% elif resultado.error %}
+                 <div class="alert alert-danger text-center">
+                    <strong>Erro: {{ resultado.error }}</strong>
+                </div>
+            {% else %}
+                <div class="alert alert-warning text-center">
+                    Nenhuma turma de folga encontrada para esta data ou houve um erro na consulta.
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <div class="footer">
+        Desenvolvido por Manus AI - {{ ano_atual }}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
